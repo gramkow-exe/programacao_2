@@ -11,6 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///"+arquivobd
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # remover warnings
 db = SQLAlchemy(app)
 
+
 class Casa(db.Model):
     
     id = db.Column(db.Integer, primary_key = True)
@@ -20,6 +21,18 @@ class Casa(db.Model):
 
     def __str__(self) -> str:
         return f"{self.id}, {self.formato}"
+
+class Proprietario(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    nome = db.Column(db.String(254))
+    email = db.Column(db.String(254))
+    telefone = db.Column(db.String(254))
+    casa_id = db.Column(db.Integer, db.ForeignKey(Casa.id), nullable = False)
+
+    casa = db.relationship("Casa")
+
+    def __str__(self) -> str:
+        return f"{self.id}, {self.nome}, {self.email}, {self.telefone}, {self.casa}"
 
 class Quarto(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -47,13 +60,21 @@ class Mobilia(db.Model):
     def __str__(self) -> str:
         return f"{self.id}, {self.nome}, {self.funcao}, {self.material}"
 
+
+
 db.create_all()
+
 
 
 c1 = Casa(formato ="Russa")
 db.session.add(c1)
 db.session.commit()
 print(c1)
+
+p1 = Proprietario(nome = "Igor", email = "gramkowigor@gmail.com", telefone = "47991503561", casa = c1 )
+db.session.add(p1)
+db.session.commit()
+print(p1)
 
 q1 = Quarto(nome="Cozinha", dimensoes = "10x10", Casa=c1)
 db.session.add(q1)
@@ -63,6 +84,8 @@ print(q1)
 m1 = Mobilia(nome = "Espelho", funcao = "Refletir", material = "Areia", Quarto = q1)
 db.session.add(m1)
 db.session.commit()
+
+
 
 """for q in db.session.query(Quarto).all():
     print(q)
