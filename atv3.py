@@ -22,6 +22,10 @@ class Casa(db.Model):
     def __str__(self) -> str:
         return f"{self.id}, {self.formato}"
 
+    __mapper_args__ = {
+        "polymorphic_identity" : 'casa' 
+    }
+
 class Proprietario(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nome = db.Column(db.String(254))
@@ -33,6 +37,10 @@ class Proprietario(db.Model):
 
     def __str__(self) -> str:
         return f"{self.id}, {self.nome}, {self.email}, {self.telefone}, {self.casa}"
+
+    __mapper_args__ = {
+        "polymorphic_identity" : 'proprietário' 
+    }
 
 class Quarto(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -48,6 +56,10 @@ class Quarto(db.Model):
             mobilias_list.append(str(i))
         return f"{self.id}, {self.nome},{self.dimensoes}, {str(self.Casa)}, {mobilias_list}"
 
+    __mapper_args__ = {
+        "polymorphic_identity" : 'quarto' 
+    }
+
     #casa = db.relationship("Casa")
 
 class Mobilia(db.Model):
@@ -60,41 +72,60 @@ class Mobilia(db.Model):
     def __str__(self) -> str:
         return f"{self.id}, {self.nome}, {self.funcao}, {self.material}"
 
+    __mapper_args__ = {
+        "polymorphic_identity" : 'mobilia' 
+    }
+
+class Geladeira(Mobilia):
+    id = db.Column(db.Integer, db.ForeignKey(Mobilia.id), primary_key=True)
+    litragem = db.Column(db.String(254))
+
+    def __str__(self) -> str:
+        return super().__str__() + self.litragem
+
+    __mapper_args__ = {
+        "polymorphic_identity" : 'mobilia-geladeira' 
+    }
+
 
 
 db.create_all()
 
 
+if __name__ == "__main__":
 
-c1 = Casa(formato ="Russa")
-db.session.add(c1)
-db.session.commit()
-print(c1)
+    if os.path.exists(arquivobd):
+        os.remove(arquivobd)
+        
+    c1 = Casa(formato ="Russa")
+    db.session.add(c1)
+    db.session.commit()
+    print(c1)
 
-p1 = Proprietario(nome = "Igor", email = "gramkowigor@gmail.com", telefone = "47991503561", casa = c1 )
-db.session.add(p1)
-db.session.commit()
-print(p1)
+    p1 = Proprietario(nome = "Igor", email = "gramkowigor@gmail.com", telefone = "47991503561", casa = c1 )
+    db.session.add(p1)
+    db.session.commit()
+    print(p1)
 
-q1 = Quarto(nome="Cozinha", dimensoes = "10x10", Casa=c1)
-db.session.add(q1)
-db.session.commit()
-print(q1)
+    q1 = Quarto(nome="Cozinha", dimensoes = "10x10", Casa=c1)
+    db.session.add(q1)
+    db.session.commit()
+    print(q1)
 
-m1 = Mobilia(nome = "Espelho", funcao = "Refletir", material = "Areia", Quarto = q1)
-db.session.add(m1)
-db.session.commit()
+    m1 = Mobilia(nome = "Espelho", funcao = "Refletir", material = "Areia", Quarto = q1)
+    db.session.add(m1)
+    db.session.commit()
 
 
 
-"""for q in db.session.query(Quarto).all():
-    print(q)
+    """for q in db.session.query(Quarto).all():
+        print(q)
 
-for q in db.session.query(Quarto).filter(casa_id = c1.id).all():
-    print(q)
-"""
-for q in c1.quartos:
-    print(q)
+    for q in db.session.query(Quarto).filter(casa_id = c1.id).all():
+        print(q)
+    """
+    for q in c1.quartos:
+        print(q)
 
 
 

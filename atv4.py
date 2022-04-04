@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 # sqlalchemy com sqlite
 path = os.path.dirname(os.path.abspath(__file__))
-arquivobd = os.path.join(path, 'pessoas.db')
+arquivobd = os.path.join(path, 'trabalhadores.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///"+arquivobd
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # remover warnings
 db = SQLAlchemy(app)
@@ -20,7 +20,7 @@ class Pessoa(db.Model):
     tipo = db.Column(db.String(50))
 
     __mapper_args__ = {
-        "polymorphic-identity": 'pessoa', 
+        "polymorphic_identity": 'pessoa', 
         "polymorphic_on" : tipo
 
     }
@@ -51,11 +51,20 @@ class Motorista(Pessoa):
     def __str__(self) -> str:
         return super().__str__() + f", Cnh: {self.cnh}"
 
+db.create_all()
 
-pedro =Vendedor(nome="Pedro", email="pe@gmail.com", comissao = 10)
-db.session.add(pedro)
-db.session.commit()
+if __name__ == "__main__":
 
-teresa = Motorista(nome="Teresa", cnh="1234-5")
-db.session.add(teresa)
-db.session.commit()
+    if os.path.exists(arquivobd):
+        os.remove(arquivobd)
+        
+
+    pedro =Vendedor(nome="Pedro", email="pe@gmail.com", comissao = 10)
+    db.session.add(pedro)
+    db.session.commit()
+
+    teresa = Motorista(nome="Teresa", cnh="1234-5")
+    db.session.add(teresa)
+    db.session.commit()
+
+    print(teresa)
