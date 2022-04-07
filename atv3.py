@@ -50,6 +50,8 @@ class Quarto(db.Model):
 
     mobilias = db.relationship("Mobilia", backref = "Quarto")
 
+    
+
     def __str__(self) -> str:
         mobilias_list = []
         for i in self.mobilias:
@@ -79,9 +81,10 @@ class Mobilia(db.Model):
 class Geladeira(Mobilia):
     id = db.Column(db.Integer, db.ForeignKey(Mobilia.id), primary_key=True)
     litragem = db.Column(db.String(254))
+    quarto_id = db.Column(db.Integer, db.ForeignKey(Quarto.id), nullable = True)
 
     def __str__(self) -> str:
-        return super().__str__() + self.litragem
+        return super().__str__() +", "+ str(self.litragem)
 
     __mapper_args__ = {
         "polymorphic_identity" : 'mobilia-geladeira' 
@@ -89,13 +92,15 @@ class Geladeira(Mobilia):
 
 
 
-db.create_all()
+
 
 
 if __name__ == "__main__":
 
     if os.path.exists(arquivobd):
         os.remove(arquivobd)
+
+    db.create_all()
         
     c1 = Casa(formato ="Russa")
     db.session.add(c1)
@@ -115,6 +120,8 @@ if __name__ == "__main__":
     m1 = Mobilia(nome = "Espelho", funcao = "Refletir", material = "Areia", Quarto = q1)
     db.session.add(m1)
     db.session.commit()
+
+    g1 = Geladeira(nome = "geladeira-tsunami", funcao = "transmitir-alegria", material = "bass", litragem = 15000, Quarto = q1)
 
 
 

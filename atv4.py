@@ -29,6 +29,7 @@ class Pessoa(db.Model):
     def __str__(self) -> str:
         return f"Id: {self.id}, Nome: {self.nome}, Email: {self.email}, Telefone: {self.telefone}*"
 
+
 class Vendedor(Pessoa):
     comissao = db.Column(db.String(254))
     id = db.Column(db.Integer, db.ForeignKey(Pessoa.id), primary_key=True)
@@ -51,12 +52,16 @@ class Motorista(Pessoa):
     def __str__(self) -> str:
         return super().__str__() + f", Cnh: {self.cnh}"
 
-db.create_all()
+
 
 if __name__ == "__main__":
 
+    
+
     if os.path.exists(arquivobd):
         os.remove(arquivobd)
+
+    db.create_all()
         
 
     pedro =Vendedor(nome="Pedro", email="pe@gmail.com", comissao = 10)
