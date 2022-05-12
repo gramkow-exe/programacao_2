@@ -46,9 +46,8 @@ class Quarto(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nome = db.Column(db.String(254))
     dimensoes = db.Column(db.String(254))
-    casa_id = db.Column(db.Integer, db.ForeignKey(Casa.id), nullable= False)
-
-    mobilias = db.relationship("Mobilia", backref = "Quarto")
+    casa_id = db.Column(db.Integer, db.ForeignKey(Casa.id), nullable= False) #nullable = false == Composição (precisa do pai)
+    mobilias = db.relationship("Mobilia", backref = "Quarto") #relaciona-se ao quarto, criando uma lista inversa de quartos
 
     
 

@@ -1,4 +1,3 @@
-from operator import le
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -20,8 +19,8 @@ class Pessoa(db.Model):
     tipo = db.Column(db.String(50))
 
     __mapper_args__ = {
-        "polymorphic_identity": 'pessoa', 
-        "polymorphic_on" : tipo
+        "polymorphic_identity": 'pessoa', #identidade da tabela
+        "polymorphic_on" : tipo #identidade de herança
 
     }
     
@@ -32,14 +31,20 @@ class Pessoa(db.Model):
 
 class Vendedor(Pessoa):
     comissao = db.Column(db.String(254))
-    id = db.Column(db.Integer, db.ForeignKey(Pessoa.id), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey(Pessoa.id), primary_key=True) #liga-se a tabela pessoa
 
     __mapper_args__ = {
         "polymorphic_identity" : 'vendedor' 
     }
     
     def __str__(self) -> str:
-        return super().__str__() + f", Comissão {self.comissao}" 
+        return super().__str__() + f", Comissão {self.comissao}" #utiliza a função str pai em super().__str__()
+
+db.create_all() #cria as tabelas, iniciando o arquivo
+        
+pedro =Vendedor(nome="Pedro", email="pe@gmail.com", comissao = 10)
+db.session.add(pedro) #Adiciona pedro
+db.session.commit() #comita o mesmo (junto ao de cima criam a primary key)
 
 
 class Motorista(Pessoa):
@@ -54,9 +59,7 @@ class Motorista(Pessoa):
 
 
 
-if __name__ == "__main__":
-
-    
+if __name__ == "__main__":   
 
     if os.path.exists(arquivobd):
         os.remove(arquivobd)
